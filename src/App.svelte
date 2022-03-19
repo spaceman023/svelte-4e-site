@@ -2,6 +2,7 @@
   import { onMount } from 'svelte'
   import { apiData } from './store.js'
   import Searchbar from './lib/Searchbar.svelte'
+
   const apiLink = 'https://api.marchingwest.com/content/power'
   onMount(async () => {
     fetch(`${apiLink}/indexes`)
@@ -22,53 +23,61 @@
   const setDisplay = (id = 0) => (num = id)
   const copyText = (v = '') => navigator.clipboard.writeText(v)
   let term = ''
-  let num = 172
+  let num = 0
   $: results = $apiData
-  $: resultsShown = results.filter((i) => i.Name.toLowerCase().includes(term.toLowerCase()))
+  $: resultsShown = results.filter((i) => i.Name.toLowerCase().includes(term.toLowerCase())).slice(0, 10)
   $: display = getResult(num)
 </script>
 
 <main>
-  <Searchbar on:setTerm={(e) => (term = e.detail.text)} />
-  <div class="container">
-    <div class="searchResults">
-      {#if resultsShown.length < 100}
-        {#each resultsShown as result, i}
-          <p>
-            <button on:click={() => setDisplay(result.ID)}>Import</button>
-            {result.Name}
-          </p>
-        {/each}
-      {/if}
-    </div>
-    <div class="displayPower">
-      {#await display then display}
-        <p>{display.Roll20}</p>
-        <button on:click={() => copyText(display.Roll20)}>Copy</button>
-      {:catch error}
-        <p style="color: red">{error.message}</p>
-      {/await}
+  <div class=" valign-wrapper">
+    <div class="container">
+      <div class="row">
+        <div class="col s12">
+          <div class="input-field active">
+            <Searchbar on:setTerm={(e) => (term = e.detail.text)} />
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s6">
+          {#if resultsShown.length < 100}
+            {#each resultsShown as result, i}
+              <div on:click={() => setDisplay(result.ID)} class="waves-effect waves-light btn-small result green lighten-1">Import</div>
+              {result.Name}
+              <br />
+            {/each}
+          {/if}
+        </div>
+        <div class="displayPower col s6">
+          <div class="card green darken-3">
+            <div class="card-content white-text">
+              {#await display then display}
+                <div class=" row">
+                  <p class="displayedPower">{display.Roll20}</p>
+                </div>
+              {:catch error}
+                <p>Please search for a power and click import.</p>
+              {/await}
+              <div class="row">
+                <!-- svelte-ignore a11y-missing-attribute -->
+                <a
+                  class=" btn-small green lighten-1 waves-effect waves-light"
+                  on:click={() => copyText(document.querySelector('.displayedPower').textContent)}
+                >
+                  Copy
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </main>
 
 <style>
-  .container {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: flex-start;
-    height: 500px;
-  }
-
-  .searchResults {
-    width: 25%;
-    height: 100%;
-    overflow: scroll;
-  }
-
-  .displayPower {
-    width: 50%;
-    height: 50%;
+  .result {
+    margin: 10px;
   }
 </style>

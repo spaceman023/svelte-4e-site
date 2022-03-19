@@ -6,4 +6,4 @@
   const setTerm = (term = '') => dispatch('setTerm', { text: term })
 </script>
 
-<input type="text" bind:value on:keyup={() => setTerm(value)} />
+<input type="text" class="" placeholder="Search for a power..." bind:value on:keyup={() => setTerm(value)} />
