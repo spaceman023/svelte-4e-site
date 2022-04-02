@@ -2,7 +2,6 @@
   import { onMount } from 'svelte'
   import { apiData } from './store.js'
   import Searchbar from './lib/Searchbar.svelte'
-
   const apiLink = 'https://api.marchingwest.com/content/power'
   onMount(async () => {
     fetch(`${apiLink}/indexes`)
@@ -30,6 +29,8 @@
     console.log(text)
     console.log(text.Roll20)
     vtt === 'roll20' ? copyText(text.Roll20) : copyText(text.JSON)
+    // @ts-ignore
+    M.toast({ html: `Copied ${text.Name} for ${vtt.toUpperCase()}` })
     return null
   }
   const setDisplay = (id = 0) => (num = id)
