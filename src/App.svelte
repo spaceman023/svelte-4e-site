@@ -20,13 +20,24 @@
     const text = await res.json()
     return text
   }
+
+  const copyText = async (v = '') => {
+    console.log(v)
+    await navigator.clipboard.writeText(v)
+  }
+  const copyMacro = async (id, vtt) => {
+    const text = await getResult(id)
+    console.log(text)
+    console.log(text.Roll20)
+    vtt === 'roll20' ? copyText(text.Roll20) : copyText(text.JSON)
+    return null
+  }
   const setDisplay = (id = 0) => (num = id)
-  const copyText = (v = '') => navigator.clipboard.writeText(v)
+
   let term = ''
   let num = 0
   $: results = $apiData
   $: resultsShown = results.filter((i) => i.Name.toLowerCase().includes(term.toLowerCase())).slice(0, 10)
-  $: display = getResult(num)
 </script>
 
 <main>
@@ -41,35 +52,12 @@
       </div>
       <div class="row">
         <div class="col s6">
-          {#if resultsShown.length < 100}
-            {#each resultsShown as result, i}
-              <div on:click={() => setDisplay(result.ID)} class="waves-effect waves-light btn-small result green lighten-1">Import</div>
-              {result.Name}
-              <br />
-            {/each}
-          {/if}
-        </div>
-        <div class="displayPower col s6">
-          <div class="card green darken-3">
-            <div class="card-content white-text">
-              {#await display then display}
-                <div class=" row">
-                  <p class="displayedPower">{display.Roll20}</p>
-                </div>
-              {:catch error}
-                <p>Please search for a power and click import.</p>
-              {/await}
-              <div class="row">
-                <!-- svelte-ignore a11y-missing-attribute -->
-                <a
-                  class=" btn-small green lighten-1 waves-effect waves-light"
-                  on:click={() => copyText(document.querySelector('.displayedPower').textContent)}
-                >
-                  Copy
-                </a>
-              </div>
-            </div>
-          </div>
+          {#each resultsShown as result, i}
+            <div on:click={() => copyMacro(result.ID, 'roll20')} class="waves-effect waves-light btn-small result green lighten-1">Copy Roll20</div>
+            <div on:click={() => copyMacro(result.ID, 'foundry')} class="waves-effect waves-light btn-small result green lighten-1">Copy Foundry</div>
+            {result.Name}
+            <br />
+          {/each}
         </div>
       </div>
     </div>
