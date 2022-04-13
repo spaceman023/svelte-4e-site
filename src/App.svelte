@@ -52,7 +52,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col s6">
+        <div class="col s12">
           {#each resultsShown as result, i}
             <div on:click={() => copyMacro(result.ID, 'roll20')} class="waves-effect waves-light btn-small result green lighten-1">Copy Roll20</div>
             <div on:click={() => copyMacro(result.ID, 'foundry')} class="waves-effect waves-light btn-small result green lighten-1">Copy Foundry</div>
